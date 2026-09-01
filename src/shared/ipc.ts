@@ -4,9 +4,16 @@ export const IPC_CHANNELS = {
   SECRET_HAS: 'secret:has',
   SECRET_SET: 'secret:set',
   LLM_GENERATE_REPLY: 'llm:generateReply',
+  LLM_SUGGEST_DRAFT: 'llm:suggestDraft',
+  LLM_GENERATE_STORY_GRAPH: 'llm:generateStoryGraph',
   IMAGE_GENERATE: 'image:generate',
   SETTINGS_GET_LLM_PROVIDER: 'settings:getLlmProvider',
-  SETTINGS_SET_LLM_PROVIDER: 'settings:setLlmProvider'
+  SETTINGS_SET_LLM_PROVIDER: 'settings:setLlmProvider',
+  CARD_LIST: 'card:list',
+  CARD_LOAD: 'card:load',
+  CARD_SAVE: 'card:save',
+  CARD_DELETE: 'card:delete',
+  CARD_CREATE_BLANK: 'card:createBlank'
 } as const
 
 /** BYOK로 사용자가 직접 입력하는 API 키의 종류 (기획서 §4) */

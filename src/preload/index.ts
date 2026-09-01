@@ -2,7 +2,14 @@ import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import { IPC_CHANNELS, type SecretKeyName } from '@shared/ipc'
 import type { SaveData } from '@shared/types/save'
-import type { CharacterReplyRequest, LlmProviderName } from '@shared/types/llm'
+import type { CardSummary, StoryCard } from '@shared/types/card'
+import type {
+  CharacterReplyRequest,
+  DraftSuggestRequest,
+  GenerateStoryGraphRequest,
+  GenerateStoryGraphResult,
+  LlmProviderName
+} from '@shared/types/llm'
 
 // Custom APIs for renderer
 const api = {
@@ -26,12 +33,25 @@ const api = {
   },
   llm: {
     generateReply: (req: CharacterReplyRequest): Promise<string> =>
-      ipcRenderer.invoke(IPC_CHANNELS.LLM_GENERATE_REPLY, req)
+      ipcRenderer.invoke(IPC_CHANNELS.LLM_GENERATE_REPLY, req),
+    suggestDraft: (req: DraftSuggestRequest): Promise<string> =>
+      ipcRenderer.invoke(IPC_CHANNELS.LLM_SUGGEST_DRAFT, req),
+    generateStoryGraph: (req: GenerateStoryGraphRequest): Promise<GenerateStoryGraphResult> =>
+      ipcRenderer.invoke(IPC_CHANNELS.LLM_GENERATE_STORY_GRAPH, req)
   },
   image: {
     /** 반환값은 <img>/배경에 바로 쓸 수 있는 data URL 문자열이다 */
     generate: (prompt: string): Promise<string> =>
       ipcRenderer.invoke(IPC_CHANNELS.IMAGE_GENERATE, prompt)
+  },
+  cards: {
+    list: (): Promise<CardSummary[]> => ipcRenderer.invoke(IPC_CHANNELS.CARD_LIST),
+    load: (cardId: string): Promise<StoryCard | null> =>
+      ipcRenderer.invoke(IPC_CHANNELS.CARD_LOAD, cardId),
+    save: (card: StoryCard): Promise<void> => ipcRenderer.invoke(IPC_CHANNELS.CARD_SAVE, card),
+    delete: (cardId: string): Promise<void> => ipcRenderer.invoke(IPC_CHANNELS.CARD_DELETE, cardId),
+    createBlank: (cardId: string, name: string): Promise<StoryCard> =>
+      ipcRenderer.invoke(IPC_CHANNELS.CARD_CREATE_BLANK, cardId, name)
   }
 }
 

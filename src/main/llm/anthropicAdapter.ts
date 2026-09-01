@@ -1,19 +1,18 @@
 import Anthropic from '@anthropic-ai/sdk'
-import type { CharacterReplyRequest } from '@shared/types/llm'
-import { buildSystemPrompt, buildUserMessage, type LlmAdapter } from './types'
+import type { LlmAdapter } from './types'
 
 export class AnthropicLlmAdapter implements LlmAdapter {
   constructor(private readonly apiKey: string) {}
 
-  async generateCharacterReply(req: CharacterReplyRequest): Promise<string> {
+  async complete(system: string, userMessage: string, maxTokens: number): Promise<string> {
     const client = new Anthropic({ apiKey: this.apiKey })
 
     try {
       const response = await client.messages.create({
         model: 'claude-opus-5',
-        max_tokens: 512,
-        system: buildSystemPrompt(req),
-        messages: [{ role: 'user', content: buildUserMessage(req) }]
+        max_tokens: maxTokens,
+        system,
+        messages: [{ role: 'user', content: userMessage }]
       })
 
       const textBlock = response.content.find(

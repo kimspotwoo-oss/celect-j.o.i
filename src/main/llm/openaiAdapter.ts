@@ -1,20 +1,19 @@
 import OpenAI from 'openai'
-import type { CharacterReplyRequest } from '@shared/types/llm'
-import { buildSystemPrompt, buildUserMessage, type LlmAdapter } from './types'
+import type { LlmAdapter } from './types'
 
 export class OpenAiLlmAdapter implements LlmAdapter {
   constructor(private readonly apiKey: string) {}
 
-  async generateCharacterReply(req: CharacterReplyRequest): Promise<string> {
+  async complete(system: string, userMessage: string, maxTokens: number): Promise<string> {
     const client = new OpenAI({ apiKey: this.apiKey })
 
     try {
       const response = await client.chat.completions.create({
         model: 'gpt-4o-mini',
-        max_tokens: 300,
+        max_tokens: maxTokens,
         messages: [
-          { role: 'system', content: buildSystemPrompt(req) },
-          { role: 'user', content: buildUserMessage(req) }
+          { role: 'system', content: system },
+          { role: 'user', content: userMessage }
         ]
       })
       return response.choices[0]?.message?.content?.trim() ?? ''

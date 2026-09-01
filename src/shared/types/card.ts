@@ -89,3 +89,9 @@ export interface StoryCard {
   story_nodes: StoryNode[]
   assets: CardAssets
 }
+
+/** 카드 목록 화면에 쓰는 요약 정보 */
+export interface CardSummary {
+  card_id: string
+  name: string
+}
