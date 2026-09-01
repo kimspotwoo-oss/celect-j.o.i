@@ -1,10 +1,13 @@
-import type { Character, EndingNode } from '@shared/types/card'
+import type { Character, EndingNode, MediaAsset } from '@shared/types/card'
 import DraftAssistButton from './DraftAssistButton'
+import ImagePicker from './ImagePicker'
 
 interface EndingNodesEditorProps {
   nodes: EndingNode[]
   character: Character
   worldSetting: string
+  cardId: string
+  mediaSet: MediaAsset[]
   onChange: (nodes: EndingNode[]) => void
 }
 
@@ -18,6 +21,8 @@ function EndingNodesEditor({
   nodes,
   character,
   worldSetting,
+  cardId,
+  mediaSet,
   onChange
 }: EndingNodesEditorProps): React.JSX.Element {
   const updateNode = (index: number, patch: Partial<EndingNode>): void => {
@@ -89,6 +94,12 @@ function EndingNodesEditor({
             target="ending_node"
             contextHint={`엔딩 (도달 조건: ${node.requirements || '미정'})`}
             onDraft={(text) => updateNode(index, { text })}
+          />
+          <ImagePicker
+            cardId={cardId}
+            mediaSet={mediaSet}
+            selectedIds={node.image_ids ?? []}
+            onChange={(image_ids) => updateNode(index, { image_ids })}
           />
         </div>
       ))}

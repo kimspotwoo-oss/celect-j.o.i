@@ -52,6 +52,19 @@ const api = {
     delete: (cardId: string): Promise<void> => ipcRenderer.invoke(IPC_CHANNELS.CARD_DELETE, cardId),
     createBlank: (cardId: string, name: string): Promise<StoryCard> =>
       ipcRenderer.invoke(IPC_CHANNELS.CARD_CREATE_BLANK, cardId, name)
+  },
+  assets: {
+    /** 네이티브 파일 선택창을 열고 선택된 절대경로를 반환한다 (취소 시 null) */
+    pickFile: (): Promise<string | null> => ipcRenderer.invoke(IPC_CHANNELS.ASSET_PICK_FILE),
+    /** 선택된 파일을 카드 폴더로 복사하고 저장된 파일명을 반환한다 */
+    upload: (cardId: string, sourcePath: string): Promise<string> =>
+      ipcRenderer.invoke(IPC_CHANNELS.ASSET_UPLOAD, cardId, sourcePath),
+    /** AI로 이미지를 생성해 카드 폴더에 저장하고 파일명을 반환한다 */
+    generate: (cardId: string, prompt: string): Promise<string> =>
+      ipcRenderer.invoke(IPC_CHANNELS.ASSET_GENERATE, cardId, prompt),
+    /** 저장된 이미지를 <img>/배경에 바로 쓸 수 있는 data URL로 반환한다 */
+    read: (cardId: string, filename: string): Promise<string> =>
+      ipcRenderer.invoke(IPC_CHANNELS.ASSET_READ, cardId, filename)
   }
 }
 

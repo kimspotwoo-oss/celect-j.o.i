@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import type { StoryCard } from '@shared/types/card'
 import { findPlayableNode, getOpeningNodeId } from '../engine/traversal'
 import { useSlideshow } from './useSlideshow'
+import { useCardImage } from './useCardImage'
 import { placeholderGradient } from './mediaPlaceholder'
 import './PlayerScreen.css'
 
@@ -48,6 +49,7 @@ function PlayerScreen({ card }: PlayerScreenProps): React.JSX.Element {
 
   const node = useMemo(() => findPlayableNode(card, currentNodeId), [card, currentNodeId])
   const activeImageId = useSlideshow(node?.image_ids ?? [], card.assets.default_transition_seconds)
+  const resolvedImageUrl = useCardImage(card, activeImageId)
 
   if (!saveLoaded) {
     return <div className="player-screen" />
@@ -93,7 +95,11 @@ function PlayerScreen({ card }: PlayerScreenProps): React.JSX.Element {
         <div
           key={activeImageId}
           className={`player-bg anim-${card.assets.animation_style}`}
-          style={{ backgroundImage: placeholderGradient(activeImageId) }}
+          style={{
+            backgroundImage: resolvedImageUrl
+              ? `url(${resolvedImageUrl})`
+              : placeholderGradient(activeImageId)
+          }}
         />
       )}
 

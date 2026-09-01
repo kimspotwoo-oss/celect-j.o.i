@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
-import type { CardSummary, StoryCard, StoryNode } from '@shared/types/card'
+import type { AnimationStyle, CardSummary, StoryCard, StoryNode } from '@shared/types/card'
 import type { GenerateStoryGraphResult } from '@shared/types/llm'
 import RequiredNodesEditor from './RequiredNodesEditor'
 import EndingNodesEditor from './EndingNodesEditor'
 import StoryGraphPanel from './StoryGraphPanel'
+import MediaSetEditor from './MediaSetEditor'
 import './CardEditorScreen.css'
+
+const ANIMATION_STYLES: AnimationStyle[] = ['subtle_zoom', 'sway', 'fade', 'none']
 
 function CardEditorScreen(): React.JSX.Element {
   const [cards, setCards] = useState<CardSummary[]>([])
@@ -164,10 +167,57 @@ function CardEditorScreen(): React.JSX.Element {
               </label>
             </div>
 
+            <div className="editor-section">
+              <h3>표시 설정</h3>
+              <label>
+                이미지 애니메이션 (animation_style)
+                <select
+                  value={card.assets.animation_style}
+                  onChange={(e) =>
+                    setCard({
+                      ...card,
+                      assets: { ...card.assets, animation_style: e.target.value as AnimationStyle }
+                    })
+                  }
+                >
+                  {ANIMATION_STYLES.map((style) => (
+                    <option key={style} value={style}>
+                      {style}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                이미지 전환 간격(초) (default_transition_seconds)
+                <input
+                  type="number"
+                  min={1}
+                  value={card.assets.default_transition_seconds}
+                  onChange={(e) =>
+                    setCard({
+                      ...card,
+                      assets: {
+                        ...card.assets,
+                        default_transition_seconds: Number(e.target.value)
+                      }
+                    })
+                  }
+                />
+              </label>
+            </div>
+
+            <MediaSetEditor
+              cardId={card.card_id}
+              mediaSet={card.assets.media_set}
+              onChange={(media_set) => setCard({ ...card, assets: { ...card.assets, media_set } })}
+            />
+
             <RequiredNodesEditor
               nodes={card.required_nodes}
               character={card.character}
               worldSetting={card.outline.world_setting}
+              cardId={card.card_id}
+              mediaSet={card.assets.media_set}
               onChange={(required_nodes) => setCard({ ...card, required_nodes })}
             />
 
@@ -175,6 +225,8 @@ function CardEditorScreen(): React.JSX.Element {
               nodes={card.ending_nodes}
               character={card.character}
               worldSetting={card.outline.world_setting}
+              cardId={card.card_id}
+              mediaSet={card.assets.media_set}
               onChange={(ending_nodes) => setCard({ ...card, ending_nodes })}
             />
 
@@ -184,6 +236,8 @@ function CardEditorScreen(): React.JSX.Element {
               requiredNodes={card.required_nodes}
               endingNodes={card.ending_nodes}
               storyNodes={card.story_nodes}
+              cardId={card.card_id}
+              mediaSet={card.assets.media_set}
               onGenerated={applyGeneratedGraph}
               onStoryNodesChange={(story_nodes: StoryNode[]) => setCard({ ...card, story_nodes })}
             />

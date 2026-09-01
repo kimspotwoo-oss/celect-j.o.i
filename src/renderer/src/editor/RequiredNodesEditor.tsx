@@ -1,10 +1,13 @@
-import type { Character, RequiredNode } from '@shared/types/card'
+import type { Character, MediaAsset, RequiredNode } from '@shared/types/card'
 import DraftAssistButton from './DraftAssistButton'
+import ImagePicker from './ImagePicker'
 
 interface RequiredNodesEditorProps {
   nodes: RequiredNode[]
   character: Character
   worldSetting: string
+  cardId: string
+  mediaSet: MediaAsset[]
   onChange: (nodes: RequiredNode[]) => void
 }
 
@@ -18,6 +21,8 @@ function RequiredNodesEditor({
   nodes,
   character,
   worldSetting,
+  cardId,
+  mediaSet,
   onChange
 }: RequiredNodesEditorProps): React.JSX.Element {
   const updateNode = (index: number, patch: Partial<RequiredNode>): void => {
@@ -97,6 +102,12 @@ function RequiredNodesEditor({
               index === 0 ? '오프닝 장면' : `${node.approx_stage}단계에서 반드시 등장해야 하는 사건`
             }
             onDraft={(text) => updateNode(index, { text })}
+          />
+          <ImagePicker
+            cardId={cardId}
+            mediaSet={mediaSet}
+            selectedIds={node.image_ids ?? []}
+            onChange={(image_ids) => updateNode(index, { image_ids })}
           />
         </div>
       ))}

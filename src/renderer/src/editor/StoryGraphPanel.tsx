@@ -1,6 +1,14 @@
 import { useState } from 'react'
-import type { Character, EndingNode, Outline, RequiredNode, StoryNode } from '@shared/types/card'
+import type {
+  Character,
+  EndingNode,
+  MediaAsset,
+  Outline,
+  RequiredNode,
+  StoryNode
+} from '@shared/types/card'
 import type { GenerateStoryGraphResult } from '@shared/types/llm'
+import ImagePicker from './ImagePicker'
 
 interface StoryGraphPanelProps {
   character: Character
@@ -8,6 +16,8 @@ interface StoryGraphPanelProps {
   requiredNodes: RequiredNode[]
   endingNodes: EndingNode[]
   storyNodes: StoryNode[]
+  cardId: string
+  mediaSet: MediaAsset[]
   onGenerated: (result: GenerateStoryGraphResult) => void
   onStoryNodesChange: (nodes: StoryNode[]) => void
 }
@@ -18,6 +28,8 @@ function StoryGraphPanel({
   requiredNodes,
   endingNodes,
   storyNodes,
+  cardId,
+  mediaSet,
   onGenerated,
   onStoryNodesChange
 }: StoryGraphPanelProps): React.JSX.Element {
@@ -134,6 +146,12 @@ function StoryGraphPanel({
               ))}
             </div>
           )}
+          <ImagePicker
+            cardId={cardId}
+            mediaSet={mediaSet}
+            selectedIds={node.image_ids ?? []}
+            onChange={(image_ids) => updateNode(index, { image_ids })}
+          />
         </div>
       ))}
     </div>

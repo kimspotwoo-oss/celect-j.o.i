@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, dialog, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -18,6 +18,7 @@ import { resolveLlmAdapter } from './llm'
 import { generateCharacterReply, suggestDraft, generateStoryGraph } from './llm/tasks'
 import { resolveImageAdapter } from './imageGen'
 import { listCards, loadCard, saveCard, deleteCard, createBlankCard } from './cards/cardStore'
+import { saveUploadedAsset, saveGeneratedAsset, readAssetAsDataUrl } from './cards/assetStore'
 
 // 리눅스에서 gnome-keyring/kwallet 같은 키링 서비스가 없으면 safeStorage가 멈추거나
 // 실패할 수 있어, OS 키체인 대신 앱 고유 키로 암호화하는 기본 저장 방식을 강제한다.
@@ -65,6 +66,28 @@ function registerIpcHandlers(): void {
   ipcMain.handle(IPC_CHANNELS.CARD_DELETE, (_event, cardId: string) => deleteCard(cardId))
   ipcMain.handle(IPC_CHANNELS.CARD_CREATE_BLANK, (_event, cardId: string, name: string) =>
     createBlankCard(cardId, name)
+  )
+
+  ipcMain.handle(IPC_CHANNELS.ASSET_PICK_FILE, async () => {
+    const result = await dialog.showOpenDialog({
+      properties: ['openFile'],
+      filters: [{ name: '이미지', extensions: ['png', 'jpg', 'jpeg', 'webp', 'gif'] }]
+    })
+    if (result.canceled || result.filePaths.length === 0) return null
+    return result.filePaths[0]
+  })
+  ipcMain.handle(IPC_CHANNELS.ASSET_UPLOAD, (_event, cardId: string, sourcePath: string) =>
+    saveUploadedAsset(cardId, sourcePath)
+  )
+  ipcMain.handle(IPC_CHANNELS.ASSET_GENERATE, async (_event, cardId: string, prompt: string) => {
+    const adapter = resolveImageAdapter()
+    if (!adapter)
+      throw new Error('이미지 생성 API 키가 설정되지 않았습니다. 설정 화면에서 입력해주세요.')
+    const bytes = await adapter.generateImage(prompt)
+    return saveGeneratedAsset(cardId, bytes)
+  })
+  ipcMain.handle(IPC_CHANNELS.ASSET_READ, (_event, cardId: string, filename: string) =>
+    readAssetAsDataUrl(cardId, filename)
   )
 }
 

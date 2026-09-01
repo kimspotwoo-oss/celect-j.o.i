@@ -13,7 +13,11 @@ export const IPC_CHANNELS = {
   CARD_LOAD: 'card:load',
   CARD_SAVE: 'card:save',
   CARD_DELETE: 'card:delete',
-  CARD_CREATE_BLANK: 'card:createBlank'
+  CARD_CREATE_BLANK: 'card:createBlank',
+  ASSET_PICK_FILE: 'asset:pickFile',
+  ASSET_UPLOAD: 'asset:upload',
+  ASSET_GENERATE: 'asset:generate',
+  ASSET_READ: 'asset:read'
 } as const
 
 /** BYOK로 사용자가 직접 입력하는 API 키의 종류 (기획서 §4) */
