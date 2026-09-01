@@ -10,6 +10,7 @@ import type {
   GenerateStoryGraphResult,
   LlmProviderName
 } from '@shared/types/llm'
+import type { ImageProviderName } from '@shared/types/imageGen'
 
 // Custom APIs for renderer
 const api = {
@@ -29,7 +30,15 @@ const api = {
     getLlmProvider: (): Promise<LlmProviderName> =>
       ipcRenderer.invoke(IPC_CHANNELS.SETTINGS_GET_LLM_PROVIDER),
     setLlmProvider: (provider: LlmProviderName): Promise<void> =>
-      ipcRenderer.invoke(IPC_CHANNELS.SETTINGS_SET_LLM_PROVIDER, provider)
+      ipcRenderer.invoke(IPC_CHANNELS.SETTINGS_SET_LLM_PROVIDER, provider),
+    getImageProvider: (): Promise<ImageProviderName> =>
+      ipcRenderer.invoke(IPC_CHANNELS.SETTINGS_GET_IMAGE_PROVIDER),
+    setImageProvider: (provider: ImageProviderName): Promise<void> =>
+      ipcRenderer.invoke(IPC_CHANNELS.SETTINGS_SET_IMAGE_PROVIDER, provider),
+    getLocalSdUrl: (): Promise<string> =>
+      ipcRenderer.invoke(IPC_CHANNELS.SETTINGS_GET_LOCAL_SD_URL),
+    setLocalSdUrl: (url: string): Promise<void> =>
+      ipcRenderer.invoke(IPC_CHANNELS.SETTINGS_SET_LOCAL_SD_URL, url)
   },
   llm: {
     generateReply: (req: CharacterReplyRequest): Promise<string> =>

@@ -11,9 +11,17 @@ import type {
   GenerateStoryGraphRequest,
   LlmProviderName
 } from '@shared/types/llm'
+import type { ImageProviderName } from '@shared/types/imageGen'
 import { loadSave, writeSave } from './saves/saveStore'
 import { hasSecret, setSecret } from './secrets/secretStore'
-import { getLlmProvider, setLlmProvider } from './settings/settingsStore'
+import {
+  getLlmProvider,
+  setLlmProvider,
+  getImageProvider,
+  setImageProvider,
+  getLocalSdUrl,
+  setLocalSdUrl
+} from './settings/settingsStore'
 import { resolveLlmAdapter } from './llm'
 import { generateCharacterReply, suggestDraft, generateStoryGraph } from './llm/tasks'
 import { resolveImageAdapter } from './imageGen'
@@ -36,6 +44,14 @@ function registerIpcHandlers(): void {
   ipcMain.handle(IPC_CHANNELS.SETTINGS_GET_LLM_PROVIDER, () => getLlmProvider())
   ipcMain.handle(IPC_CHANNELS.SETTINGS_SET_LLM_PROVIDER, (_event, provider: LlmProviderName) =>
     setLlmProvider(provider)
+  )
+  ipcMain.handle(IPC_CHANNELS.SETTINGS_GET_IMAGE_PROVIDER, () => getImageProvider())
+  ipcMain.handle(IPC_CHANNELS.SETTINGS_SET_IMAGE_PROVIDER, (_event, provider: ImageProviderName) =>
+    setImageProvider(provider)
+  )
+  ipcMain.handle(IPC_CHANNELS.SETTINGS_GET_LOCAL_SD_URL, () => getLocalSdUrl())
+  ipcMain.handle(IPC_CHANNELS.SETTINGS_SET_LOCAL_SD_URL, (_event, url: string) =>
+    setLocalSdUrl(url)
   )
   const requireLlmAdapter = (): NonNullable<ReturnType<typeof resolveLlmAdapter>> => {
     const adapter = resolveLlmAdapter()
