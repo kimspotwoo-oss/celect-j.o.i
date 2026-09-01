@@ -1,0 +1,179 @@
+.player-screen {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 100vh;
+  margin: 0 auto;
+  overflow: hidden;
+  background: #000;
+  color: #fff;
+  font-family:
+    'Pretendard',
+    -apple-system,
+    system-ui,
+    sans-serif;
+}
+
+.player-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  will-change: transform, opacity;
+}
+
+.player-bg.anim-subtle_zoom {
+  animation: bg-subtle-zoom 12s ease-in-out infinite alternate;
+}
+
+.player-bg.anim-sway {
+  animation: bg-sway 9s ease-in-out infinite alternate;
+}
+
+.player-bg.anim-fade {
+  animation: bg-fade 6s ease-in-out infinite alternate;
+}
+
+@keyframes bg-subtle-zoom {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes bg-sway {
+  from {
+    transform: translate(0, 0) scale(1.03);
+  }
+  to {
+    transform: translate(-1.5%, 1%) scale(1.03);
+  }
+}
+
+@keyframes bg-fade {
+  from {
+    opacity: 0.85;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.player-dialogue {
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  bottom: 14%;
+  padding: 1.1em 1.4em;
+  background: rgba(10, 10, 15, 0.62);
+  backdrop-filter: blur(2px);
+  border-radius: 10px;
+  font-size: 1.15rem;
+  line-height: 1.5;
+  animation: dialogue-in 0.3s ease-out;
+}
+
+@keyframes dialogue-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.player-choices {
+  position: absolute;
+  right: 5%;
+  bottom: 26%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+  align-items: flex-end;
+  max-width: 45%;
+}
+
+.player-choice-btn {
+  padding: 0.65em 1.1em;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    transform 0.15s;
+  text-align: left;
+}
+
+.player-choice-btn:hover {
+  background: rgba(255, 255, 255, 0.28);
+  transform: translateX(-2px);
+}
+
+.player-advance-btn {
+  position: absolute;
+  right: 5%;
+  bottom: 26%;
+  padding: 0.55em 1.2em;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.player-input-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  gap: 0.5em;
+  padding: 0.7em 5%;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.player-input-bar input {
+  flex: 1;
+  padding: 0.6em 0.9em;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.player-input-bar input:disabled {
+  opacity: 0.35;
+}
+
+.player-input-bar button {
+  padding: 0.6em 1.2em;
+  border-radius: 8px;
+  border: none;
+  background: #4a7dff;
+  color: #fff;
+  cursor: pointer;
+}
+
+.player-input-bar button:disabled {
+  background: rgba(255, 255, 255, 0.15);
+  cursor: not-allowed;
+}
+
+.player-ending-badge {
+  position: absolute;
+  top: 4%;
+  left: 5%;
+  padding: 0.3em 0.8em;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+}
