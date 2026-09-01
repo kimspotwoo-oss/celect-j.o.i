@@ -167,6 +167,15 @@
   cursor: not-allowed;
 }
 
+.player-gen-error {
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  bottom: 3.6em;
+  color: #ff9e9e;
+  font-size: 0.85rem;
+}
+
 .player-ending-badge {
   position: absolute;
   top: 4%;

@@ -2,6 +2,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import { IPC_CHANNELS, type SecretKeyName } from '@shared/ipc'
 import type { SaveData } from '@shared/types/save'
+import type { CharacterReplyRequest, LlmProviderName } from '@shared/types/llm'
 
 // Custom APIs for renderer
 const api = {
@@ -16,6 +17,21 @@ const api = {
       ipcRenderer.invoke(IPC_CHANNELS.SECRET_HAS, keyName),
     set: (keyName: SecretKeyName, value: string): Promise<void> =>
       ipcRenderer.invoke(IPC_CHANNELS.SECRET_SET, keyName, value)
+  },
+  settings: {
+    getLlmProvider: (): Promise<LlmProviderName> =>
+      ipcRenderer.invoke(IPC_CHANNELS.SETTINGS_GET_LLM_PROVIDER),
+    setLlmProvider: (provider: LlmProviderName): Promise<void> =>
+      ipcRenderer.invoke(IPC_CHANNELS.SETTINGS_SET_LLM_PROVIDER, provider)
+  },
+  llm: {
+    generateReply: (req: CharacterReplyRequest): Promise<string> =>
+      ipcRenderer.invoke(IPC_CHANNELS.LLM_GENERATE_REPLY, req)
+  },
+  image: {
+    /** 반환값은 <img>/배경에 바로 쓸 수 있는 data URL 문자열이다 */
+    generate: (prompt: string): Promise<string> =>
+      ipcRenderer.invoke(IPC_CHANNELS.IMAGE_GENERATE, prompt)
   }
 }
 

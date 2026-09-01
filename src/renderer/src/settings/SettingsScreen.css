@@ -58,6 +58,19 @@
   cursor: not-allowed;
 }
 
+.settings-provider-options {
+  display: flex;
+  gap: 1.2rem;
+}
+
+.settings-radio {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
 .settings-saved {
   margin-top: 0.35rem;
   font-size: 0.8rem;

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { SecretKeyName } from '@shared/ipc'
+import type { LlmProviderName } from '@shared/types/llm'
 import './SettingsScreen.css'
 
 interface KeyFieldProps {
@@ -47,6 +48,45 @@ function KeyField({ keyName, label, placeholder }: KeyFieldProps): React.JSX.Ele
   )
 }
 
+function LlmProviderSelect(): React.JSX.Element {
+  const [provider, setProvider] = useState<LlmProviderName>('anthropic')
+
+  useEffect(() => {
+    window.api.settings.getLlmProvider().then(setProvider)
+  }, [])
+
+  const handleChange = async (next: LlmProviderName): Promise<void> => {
+    setProvider(next)
+    await window.api.settings.setLlmProvider(next)
+  }
+
+  return (
+    <div className="settings-field">
+      <label>LLM 제공자</label>
+      <div className="settings-provider-options">
+        <label className="settings-radio">
+          <input
+            type="radio"
+            name="llm_provider"
+            checked={provider === 'anthropic'}
+            onChange={() => handleChange('anthropic')}
+          />
+          Anthropic (Claude)
+        </label>
+        <label className="settings-radio">
+          <input
+            type="radio"
+            name="llm_provider"
+            checked={provider === 'openai'}
+            onChange={() => handleChange('openai')}
+          />
+          OpenAI (GPT)
+        </label>
+      </div>
+    </div>
+  )
+}
+
 function SettingsScreen(): React.JSX.Element {
   return (
     <div className="settings-screen">
@@ -55,8 +95,13 @@ function SettingsScreen(): React.JSX.Element {
         입력한 키는 이 기기의 OS 보안 저장소로 암호화되어 로컬에만 저장됩니다. 서버로 전송되지
         않습니다.
       </p>
+      <LlmProviderSelect />
       <KeyField keyName="llm_api_key" label="LLM API 키" placeholder="sk-..." />
-      <KeyField keyName="image_gen_api_key" label="이미지 생성 API 키" placeholder="sk-..." />
+      <KeyField
+        keyName="image_gen_api_key"
+        label="이미지 생성 API 키 (Stability AI)"
+        placeholder="sk-..."
+      />
     </div>
   )
 }

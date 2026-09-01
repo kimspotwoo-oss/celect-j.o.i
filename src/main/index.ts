@@ -4,8 +4,12 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { IPC_CHANNELS, type SecretKeyName } from '@shared/ipc'
 import type { SaveData } from '@shared/types/save'
+import type { CharacterReplyRequest, LlmProviderName } from '@shared/types/llm'
 import { loadSave, writeSave } from './saves/saveStore'
 import { hasSecret, setSecret } from './secrets/secretStore'
+import { getLlmProvider, setLlmProvider } from './settings/settingsStore'
+import { resolveLlmAdapter } from './llm'
+import { resolveImageAdapter } from './imageGen'
 
 // 리눅스에서 gnome-keyring/kwallet 같은 키링 서비스가 없으면 safeStorage가 멈추거나
 // 실패할 수 있어, OS 키체인 대신 앱 고유 키로 암호화하는 기본 저장 방식을 강제한다.
@@ -20,6 +24,22 @@ function registerIpcHandlers(): void {
   ipcMain.handle(IPC_CHANNELS.SECRET_SET, (_event, keyName: SecretKeyName, value: string) =>
     setSecret(keyName, value)
   )
+  ipcMain.handle(IPC_CHANNELS.SETTINGS_GET_LLM_PROVIDER, () => getLlmProvider())
+  ipcMain.handle(IPC_CHANNELS.SETTINGS_SET_LLM_PROVIDER, (_event, provider: LlmProviderName) =>
+    setLlmProvider(provider)
+  )
+  ipcMain.handle(IPC_CHANNELS.LLM_GENERATE_REPLY, async (_event, req: CharacterReplyRequest) => {
+    const adapter = resolveLlmAdapter()
+    if (!adapter) throw new Error('LLM API 키가 설정되지 않았습니다. 설정 화면에서 입력해주세요.')
+    return adapter.generateCharacterReply(req)
+  })
+  ipcMain.handle(IPC_CHANNELS.IMAGE_GENERATE, async (_event, prompt: string) => {
+    const adapter = resolveImageAdapter()
+    if (!adapter)
+      throw new Error('이미지 생성 API 키가 설정되지 않았습니다. 설정 화면에서 입력해주세요.')
+    const bytes = await adapter.generateImage(prompt)
+    return `data:image/png;base64,${bytes.toString('base64')}`
+  })
 }
 
 function createWindow(): void {
