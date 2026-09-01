@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { StoryCard } from '@shared/types/card'
 import { findPlayableNode, getOpeningNodeId } from '../engine/traversal'
 import { useSlideshow } from './useSlideshow'
@@ -11,10 +11,44 @@ interface PlayerScreenProps {
 
 function PlayerScreen({ card }: PlayerScreenProps): React.JSX.Element {
   const [currentNodeId, setCurrentNodeId] = useState(() => getOpeningNodeId(card) ?? '')
+  const [history, setHistory] = useState<string[]>([])
   const [freeText, setFreeText] = useState('')
+  const [saveLoaded, setSaveLoaded] = useState(false)
+
+  // 저장된 진행 상황이 있으면 이어서 재생
+  useEffect(() => {
+    let cancelled = false
+    window.api.saves.load(card.card_id).then((save) => {
+      if (cancelled) return
+      if (save) {
+        setCurrentNodeId(save.current_node_id)
+        setHistory(save.history)
+      }
+      setSaveLoaded(true)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [card.card_id])
+
+  // 노드 이동 시마다 자동 저장 (기획서 §7)
+  useEffect(() => {
+    if (!saveLoaded || !currentNodeId) return
+    window.api.saves.write({
+      save_id: `${card.card_id}_save`,
+      card_id: card.card_id,
+      current_node_id: currentNodeId,
+      history,
+      last_played: new Date().toISOString()
+    })
+  }, [saveLoaded, card.card_id, currentNodeId, history])
 
   const node = useMemo(() => findPlayableNode(card, currentNodeId), [card, currentNodeId])
   const activeImageId = useSlideshow(node?.image_ids ?? [], card.assets.default_transition_seconds)
+
+  if (!saveLoaded) {
+    return <div className="player-screen" />
+  }
 
   if (!node) {
     return <div className="player-screen">노드를 찾을 수 없습니다: {currentNodeId}</div>
@@ -22,6 +56,7 @@ function PlayerScreen({ card }: PlayerScreenProps): React.JSX.Element {
 
   const goTo = (nodeId: string): void => {
     setFreeText('')
+    setHistory((h) => [...h, nodeId])
     setCurrentNodeId(nodeId)
   }
 

@@ -1,0 +1,65 @@
+.settings-screen {
+  width: 100%;
+  max-width: 560px;
+  padding: 2rem;
+  color: #eee;
+  font-family: system-ui, sans-serif;
+}
+
+.settings-desc {
+  color: #aaa;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.settings-field {
+  margin-bottom: 1.3rem;
+}
+
+.settings-field label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.95rem;
+}
+
+.settings-badge {
+  font-size: 0.75rem;
+  padding: 0.1em 0.5em;
+  border-radius: 999px;
+  background: rgba(74, 125, 255, 0.25);
+  color: #9db8ff;
+}
+
+.settings-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.settings-row input {
+  flex: 1;
+  padding: 0.55em 0.8em;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+.settings-row button {
+  padding: 0.55em 1.1em;
+  border-radius: 8px;
+  border: none;
+  background: #4a7dff;
+  color: #fff;
+  cursor: pointer;
+}
+
+.settings-row button:disabled {
+  background: rgba(255, 255, 255, 0.12);
+  cursor: not-allowed;
+}
+
+.settings-saved {
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  color: #7fdc8f;
+}

@@ -1,7 +1,26 @@
-import { app, shell, BrowserWindow } from 'electron'
+import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import { IPC_CHANNELS, type SecretKeyName } from '@shared/ipc'
+import type { SaveData } from '@shared/types/save'
+import { loadSave, writeSave } from './saves/saveStore'
+import { hasSecret, setSecret } from './secrets/secretStore'
+
+// 리눅스에서 gnome-keyring/kwallet 같은 키링 서비스가 없으면 safeStorage가 멈추거나
+// 실패할 수 있어, OS 키체인 대신 앱 고유 키로 암호화하는 기본 저장 방식을 강제한다.
+if (process.platform === 'linux') {
+  app.commandLine.appendSwitch('password-store', 'basic')
+}
+
+function registerIpcHandlers(): void {
+  ipcMain.handle(IPC_CHANNELS.SAVE_LOAD, (_event, cardId: string) => loadSave(cardId))
+  ipcMain.handle(IPC_CHANNELS.SAVE_WRITE, (_event, saveData: SaveData) => writeSave(saveData))
+  ipcMain.handle(IPC_CHANNELS.SECRET_HAS, (_event, keyName: SecretKeyName) => hasSecret(keyName))
+  ipcMain.handle(IPC_CHANNELS.SECRET_SET, (_event, keyName: SecretKeyName, value: string) =>
+    setSecret(keyName, value)
+  )
+}
 
 function createWindow(): void {
   // Create the browser window.
@@ -48,6 +67,8 @@ app.whenReady().then(() => {
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
+
+  registerIpcHandlers()
 
   createWindow()
 
